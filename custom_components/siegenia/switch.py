@@ -93,10 +93,17 @@ class SiegeniaParamSwitch(CoordinatorEntity, SwitchEntity):
 
 
 class SiegeniaPowerSwitch(SiegeniaParamSwitch):
-    """Switches the whole unit on or off, like the power button in the SIEGENIA app."""
+    """Switches the whole unit on or off, like the power button in the SIEGENIA app.
+
+    It is the device's main entity: no name of its own, so Home Assistant shows it
+    under the device name and lists it first on the device page.
+    """
+
+    _attr_has_entity_name = True
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         super().__init__(hass, entry, "deviceactive", "Power", "mdi:power")
+        self._attr_name = None
 
     @property
     def is_on(self) -> bool:

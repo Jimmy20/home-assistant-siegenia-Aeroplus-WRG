@@ -18,7 +18,9 @@ like the power button in the SIEGENIA Comfort app. Written for the
   [ioBroker adapter](https://github.com/Apollon77/ioBroker.siegenia) exposes as
   `params.active`). The integration never sent it, so the unit could only be
   throttled to `fanpower: 0`, not switched off. The switch is created only when the
-  device reports `deviceactive` (in `getDeviceState` or `getDeviceParams`).
+  device reports `deviceactive` (in `getDeviceState` or `getDeviceParams`). It is the
+  device's main entity, so Home Assistant shows it under the device name and lists
+  it first on the device page.
 - **`fan.turn_off` / `fan.turn_on` use the same flag** on devices that report it.
   Turning off keeps fan power and mode untouched, so turning on resumes where the
   unit left off. Devices without `deviceactive` keep the previous behaviour.
@@ -31,7 +33,8 @@ like the power button in the SIEGENIA Comfort app. Written for the
 2. HACS → ⋮ → **Custom repositories** → add
    `https://github.com/Jimmy20/home-assistant-siegenia-Aeroplus-WRG`, type
    *Integration* → download.
-3. Restart Home Assistant. The new `… Power` switch appears on the device page.
+3. Restart Home Assistant. The power switch appears at the top of the device page,
+   under the device's name.
 
 ## About this fork
 
@@ -237,6 +240,9 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## Version History
+
+- 0.9.1
+  - `Power` is the device's main entity: shown under the device name, listed first on the device page
 
 - 0.9.0
   - `Power` switch: master on/off via `devicestate.deviceactive`
