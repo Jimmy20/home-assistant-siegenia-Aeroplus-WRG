@@ -31,9 +31,9 @@ class SiegeniaFanEntity(CoordinatorEntity, FanEntity):
         super().__init__(coordinator)
         self._client = client
         self._entry = entry
-        # Get system name from device info
-        system_name = self._get_system_name()
-        self._attr_name = f"{system_name} Fan" if system_name else "Siegenia Fan"
+        # has_entity_name: Home Assistant prefixes the device name itself, so the
+        # system name must not be part of the entity name or it shows up twice.
+        self._attr_name = "Fan"
         self._attr_unique_id = f"{entry.entry_id}-fan"
         self._last_pct: int | None = None
 
@@ -42,17 +42,6 @@ class SiegeniaFanEntity(CoordinatorEntity, FanEntity):
         return build_device_info(
             self.coordinator.data, self._entry.entry_id, self._entry.data.get("host")
         )
-        
-    def _get_system_name(self) -> str | None:
-        """Get the system name from device info."""
-        data = self.coordinator.data or {}
-        for part in ("state", "params", "info", "details"):
-            d = data.get(part) or {}
-            if isinstance(d, dict):
-                system_name = d.get("systemname") or d.get("device_name")
-                if system_name:
-                    return system_name
-        return None
 
     def _combined(self) -> dict:
         data = self.coordinator.data or {}
