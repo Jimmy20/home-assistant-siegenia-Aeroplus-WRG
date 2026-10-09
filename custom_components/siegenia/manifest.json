@@ -1,14 +1,15 @@
 {
   "domain": "siegenia",
   "name": "Siegenia (alpha)",
-  "version": "0.8.1",
-  "documentation": "https://github.com/Darklirah/home-assistant-siegenia-Aeroplus-WRG",
-  "issue_tracker": "https://github.com/Darklirah/home-assistant-siegenia-Aeroplus-WRG/issues",
+  "version": "0.9.0",
+  "documentation": "https://github.com/Jimmy20/home-assistant-siegenia-Aeroplus-WRG",
+  "issue_tracker": "https://github.com/Jimmy20/home-assistant-siegenia-Aeroplus-WRG/issues",
   "requirements": [],
   "dependencies": [],
   "codeowners": [
     "@rikbootsman",
-    "@Darklirah"
+    "@Darklirah",
+    "@Jimmy20"
   ],
   "iot_class": "local_push",
   "config_flow": true

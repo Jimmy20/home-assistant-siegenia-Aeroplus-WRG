@@ -5,6 +5,34 @@ Vibe coded, based on the awesome work for iobroker here: https://github.com/Apol
 
 Tested with 4 Aeroplus WRG modules. Other siegenia devices might work, untested.
 
+## Power switch (AEROMAT VT)
+
+Fork of [Darklirah/home-assistant-siegenia-Aeroplus-WRG](https://github.com/Darklirah/home-assistant-siegenia-Aeroplus-WRG)
+that adds the one control that was missing: switching the whole unit **on and off**,
+like the power button in the SIEGENIA Comfort app. Written for the
+**AEROMAT VT (WRG)**.
+
+- **New `Power` switch.** The Siegenia API has a single master flag for this,
+  `devicestate.deviceactive`, written as
+  `setDeviceParams {"devicestate": {"deviceactive": false}}` (the same parameter the
+  [ioBroker adapter](https://github.com/Apollon77/ioBroker.siegenia) exposes as
+  `params.active`). The integration never sent it, so the unit could only be
+  throttled to `fanpower: 0`, not switched off. The switch is created only when the
+  device reports `deviceactive` (in `getDeviceState` or `getDeviceParams`).
+- **`fan.turn_off` / `fan.turn_on` use the same flag** on devices that report it.
+  Turning off keeps fan power and mode untouched, so turning on resumes where the
+  unit left off. Devices without `deviceactive` keep the previous behaviour.
+
+### Install from this fork via HACS
+
+1. If the Darklirah fork is installed: HACS → *Siegenia (AEROVITAL + Aeroplus fork)*
+   → ⋮ → **Remove**. Do **not** delete the integration under *Settings → Devices &
+   services*; the configuration and entities are kept.
+2. HACS → ⋮ → **Custom repositories** → add
+   `https://github.com/Jimmy20/home-assistant-siegenia-Aeroplus-WRG`, type
+   *Integration* → download.
+3. Restart Home Assistant. The new `… Power` switch appears on the device page.
+
 ## About this fork
 
 Fork of [rikbootsman/home-assistant-siegenia-Aeroplus-WRG](https://github.com/rikbootsman/home-assistant-siegenia-Aeroplus-WRG),
@@ -209,6 +237,10 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## Version History
+
+- 0.9.0
+  - `Power` switch: master on/off via `devicestate.deviceactive`
+  - `fan.turn_on` / `fan.turn_off` switch the whole unit on devices that report it
 
 - 0.7.0 (Alpha)
   - Initial public release

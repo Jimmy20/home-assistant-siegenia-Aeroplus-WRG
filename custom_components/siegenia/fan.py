@@ -10,7 +10,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.config_entries import ConfigEntry
 
 from .const import DOMAIN, DATA_CLIENT, DATA_COORDINATOR
-from .device import build_device_info
+from .device import build_device_info, device_active, device_active_params
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -98,6 +98,8 @@ class SiegeniaFanEntity(CoordinatorEntity, FanEntity):
 
     @property
     def is_on(self) -> bool:
+        if device_active(self.coordinator.data) is False:
+            return False
         d = self._combined()
         for k in ("power", "on", "enabled"):
             if k in d:
@@ -174,9 +176,18 @@ class SiegeniaFanEntity(CoordinatorEntity, FanEntity):
         # (fan/__init__.py: async_turn_on(percentage, preset_mode, **kwargs)),
         # so they have to be named parameters or the call raises a TypeError.
         if percentage is not None:
+            if device_active(self.coordinator.data) is False:
+                await self._client.set_device_params(device_active_params(True))
             await self.async_set_percentage(percentage)
             return
-        if self._has_power_param():
+        if device_active(self.coordinator.data) is not None:
+            # The unit has a real master switch: power it up and keep its fan settings.
+            params = device_active_params(True)
+            d = self._combined()
+            if not d.get("automode") and not int(d.get("fanpower", 0) or 0):
+                params["fanpower"] = self._last_pct or 50
+            await self._client.set_device_params(params)
+        elif self._has_power_param():
             await self._client.set_device_params({"power": True, "on": True, "enabled": True})
         else:
             # No on/off parameter: the unit runs whenever fanpower > 0.
@@ -186,7 +197,10 @@ class SiegeniaFanEntity(CoordinatorEntity, FanEntity):
         await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
-        if self._has_power_param():
+        if device_active(self.coordinator.data) is not None:
+            # Switch the whole unit off; fan power and mode stay as they are for turn_on.
+            params = device_active_params(False)
+        elif self._has_power_param():
             params = {"power": False, "on": False, "enabled": False, "fanpower": 0}
         else:
             # Auto mode would ramp the fan straight back up, so switch it off too.
